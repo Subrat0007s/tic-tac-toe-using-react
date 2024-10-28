@@ -4,30 +4,28 @@ import GameBoard from "./components/GameBoard";
 import Log from "./components/Log";
 import { WINNING_COMBINATIONS } from "./WINNING_COMBINATION.JS";
 import { GameOver } from "./components/GameOver";
-import  {PLAYER} from './PLAYER'
+import { PLAYER } from './PLAYER';
+
 const INITIAL_GAME_BOARD = [
   [null, null, null],
   [null, null, null],
   [null, null, null],
 ];
 
-function derivedActivePlater(gameTurns) {
+function derivedActivePlayer(gameTurns) {
   let currPlayer = "X";
   if (gameTurns.length > 0 && gameTurns[0].player === "X") {
     currPlayer = "O";
   }
   return currPlayer;
 }
-function derieveWinner(gameBoard, players) {
-  let winner;
 
+function deriveWinner(gameBoard, players) {
+  let winner;
   for (const combination of WINNING_COMBINATIONS) {
-    const firstSquareSymbol =
-      gameBoard[combination[0].row][combination[0].column];
-    const secondSquareSymbol =
-      gameBoard[combination[1].row][combination[1].column];
-    const thirdSquareSymbol =
-      gameBoard[combination[2].row][combination[2].column];
+    const firstSquareSymbol = gameBoard[combination[0].row][combination[0].column];
+    const secondSquareSymbol = gameBoard[combination[1].row][combination[1].column];
+    const thirdSquareSymbol = gameBoard[combination[2].row][combination[2].column];
     if (
       firstSquareSymbol &&
       firstSquareSymbol === secondSquareSymbol &&
@@ -38,9 +36,9 @@ function derieveWinner(gameBoard, players) {
   }
   return winner;
 }
+
 function derivedGameBoard(gameTurns) {
   let gameBoard = [...INITIAL_GAME_BOARD.map((array) => [...array])]; // Deep Copy
-
   for (const turn of gameTurns) {
     const { square, player } = turn;
     const { row, col } = square;
@@ -52,29 +50,26 @@ function derivedGameBoard(gameTurns) {
 const App = () => {
   const [players, setPlayers] = useState(PLAYER);
   const [gameTurns, setGameTurns] = useState([]);
-  //const [activePlayer, setActivePlayer] = useState("X");
-  const activePlayer = derivedActivePlater(gameTurns);
-
-  // let gameBoard = initialGameBoard;
-
+  const activePlayer = derivedActivePlayer(gameTurns);
   const gameBoard = derivedGameBoard(gameTurns);
-  const winner = derieveWinner(gameBoard, players);
+  const winner = deriveWinner(gameBoard, players);
   let draw = gameTurns.length === 9 && !winner;
-  function handleSelectSquare(rowIndex, colIndex) {
-    // setActivePlayer((curActivePlayer) => (curActivePlayer === "X" ? "O" : "X"));
-    setGameTurns((prevTurns) => {
-      let currentPlayer = derivedActivePlater(prevTurns);
 
-      const updateedTurns = [
+  function handleSelectSquare(rowIndex, colIndex) {
+    setGameTurns((prevTurns) => {
+      let currentPlayer = derivedActivePlayer(prevTurns);
+      const updatedTurns = [
         { square: { row: rowIndex, col: colIndex }, player: currentPlayer },
         ...prevTurns,
       ];
-      return updateedTurns;
+      return updatedTurns;
     });
   }
+
   function handleRestart() {
     setGameTurns([]);
   }
+
   function handlePlayerNameChange(symbol, newName) {
     setPlayers((prevPlayers) => {
       return {
@@ -83,6 +78,7 @@ const App = () => {
       };
     });
   }
+
   return (
     <main>
       <div id="game-container">
@@ -105,7 +101,7 @@ const App = () => {
         )}
         <GameBoard onSelectSquare={handleSelectSquare} board={gameBoard} />
       </div>
-      <Log turns={gameTurns} />
+      <Log turns={gameTurns} players={players} />
     </main>
   );
 };
